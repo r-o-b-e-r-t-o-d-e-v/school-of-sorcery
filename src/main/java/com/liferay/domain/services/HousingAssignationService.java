@@ -20,10 +20,10 @@ public class HousingAssignationService {
 
         log.fine("Housing assignation starting");
 
-        final HouseAssignationBook houseAssignationBook =
-              (HouseAssignationBook) houses.stream()
-                    .map(house -> new HouseResidents(house, new ArrayList<>()))
-                    .toList();
+        final HouseAssignationBook houseAssignationBook = new HouseAssignationBook();
+
+        houses.forEach(house ->
+              houseAssignationBook.add(new HouseResidents(house, new ArrayList<>())));
 
         studentHouseScorings.forEach(studentHouseScoring ->
               handleHouseAssignation(
