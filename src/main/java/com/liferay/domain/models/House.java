@@ -1,6 +1,6 @@
 package com.liferay.domain.models;
 
-public record HouseRule(
+public record House(
       String name,
       int beds,
       CharacterTraitScoreRules characterTraitScoreRules

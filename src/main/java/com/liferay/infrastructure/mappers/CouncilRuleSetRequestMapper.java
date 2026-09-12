@@ -3,7 +3,7 @@ package com.liferay.infrastructure.mappers;
 import com.liferay.domain.models.AdmissionRules;
 import com.liferay.domain.models.CharacterTraitScoreRules;
 import com.liferay.domain.models.CouncilPolicy;
-import com.liferay.domain.models.HouseRule;
+import com.liferay.domain.models.House;
 import com.liferay.domain.models.HousingScoreRules;
 import com.liferay.domain.models.RankingScoreRules;
 import com.liferay.infrastructure.dtos.requests.CouncilRuleSetRequest;
@@ -54,8 +54,8 @@ public final class CouncilRuleSetRequestMapper {
         );
     }
 
-    private HouseRule mapHouseRule(HouseRequest houseRequest) {
-        return new HouseRule(
+    private House mapHouseRule(HouseRequest houseRequest) {
+        return new House(
               houseRequest.name(),
               houseRequest.beds(),
               mapCharacterTraitScoreRules(houseRequest)
