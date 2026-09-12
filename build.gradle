@@ -1,18 +1,27 @@
 plugins {
     id 'java'
+    id("org.springframework.boot") version("3.5.14")
 }
 
 group = 'com.liferay'
 version = '1.0-SNAPSHOT'
+
+ext {
+    LOMBOK = '1.18.42'
+    SPRING_BOOT = '3.5.14'
+    OPEN_API = '2.6.0'
+}
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation("org.projectlombok:lombok:$LOMBOK")
+    implementation("org.springframework.boot:spring-boot-starter-web:$SPRING_BOOT")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$OPEN_API")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test:$SPRING_BOOT")
 }
 
 test {
