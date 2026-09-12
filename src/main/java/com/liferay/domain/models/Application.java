@@ -1,9 +1,9 @@
-package com.liferay.infrastructure.dtos.requests;
+package com.liferay.domain.models;
 
 import java.time.LocalDate;
 import java.util.List;
 
-public record ApplicationRequest(
+public record Application(
       String id,
       String firstName,
       String familyName,
