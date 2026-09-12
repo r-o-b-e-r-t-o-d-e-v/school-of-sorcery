@@ -1,6 +1,7 @@
 package com.liferay.infrastructure.config;
 
 import com.liferay.domain.services.AdmissionService;
+import com.liferay.domain.services.BanningService;
 import com.liferay.domain.services.PreAdmissionFilterService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +15,12 @@ public class BeansConfig {
     }
 
     @Bean
-    public PreAdmissionFilterService preAdmissionFilterService() {
-        return new PreAdmissionFilterService();
+    public PreAdmissionFilterService preAdmissionFilterService(final BanningService banningService) {
+        return new PreAdmissionFilterService(banningService);
+    }
+
+    @Bean
+    public BanningService banningService() {
+        return new BanningService();
     }
 }
