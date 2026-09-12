@@ -2,7 +2,7 @@ package com.liferay.domain.services;
 
 import com.liferay.domain.models.Application;
 import com.liferay.domain.models.HousingScoreRules;
-import com.liferay.domain.models.housing.HouseAssignation;
+import com.liferay.domain.models.housing.HouseAssignationBook;
 import com.liferay.domain.models.housing.StudentHouseScorings;
 
 import java.util.List;
@@ -20,12 +20,12 @@ public class HousingService {
         this.housingAssignationService = housingAssignationService;
     }
 
-    public List<HouseAssignation> processHousing(
+    public HouseAssignationBook assignHouses(
           final List<Application> acceptedStudents, final HousingScoreRules housingScoreRules) {
 
         log.fine("Housing process starting");
 
-        // Calculate each student's scoring per houses
+        // Calculate each student's scoring per housesScoring
         final List<StudentHouseScorings> studentHouseScorings =
               houseScoringService.getHouseScoring(acceptedStudents, housingScoreRules);
 

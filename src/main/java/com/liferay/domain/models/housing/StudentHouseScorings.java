@@ -7,6 +7,6 @@ import java.util.Map;
 
 public record StudentHouseScorings(
       Application application,
-      Map<House, Integer> houses
+      Map<House, Integer> housesScoring
 ) {
 }

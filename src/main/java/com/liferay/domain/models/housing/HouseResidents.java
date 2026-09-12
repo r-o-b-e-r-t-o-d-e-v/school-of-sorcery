@@ -5,7 +5,7 @@ import com.liferay.domain.models.House;
 
 import java.util.List;
 
-public record HouseAssignation(
+public record HouseResidents(
       House house,
       List<Application> students
 ) {

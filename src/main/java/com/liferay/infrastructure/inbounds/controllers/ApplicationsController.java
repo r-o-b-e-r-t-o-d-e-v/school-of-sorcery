@@ -2,7 +2,7 @@ package com.liferay.infrastructure.inbounds.controllers;
 
 import com.liferay.domain.models.Application;
 import com.liferay.domain.models.CouncilPolicy;
-import com.liferay.domain.services.AdmissionService;
+import com.liferay.domain.services.EnrollmentService;
 import com.liferay.infrastructure.dtos.requests.ApplicationAdmissionRequest;
 import com.liferay.infrastructure.mappers.CouncilRuleSetRequestMapper;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ApplicationsController {
     private final CouncilRuleSetRequestMapper councilRuleSetRequestMapper;
-    private final AdmissionService admissionService;
+    private final EnrollmentService enrollmentService;
 
     @PostMapping("/{course}/admission")
     public ResponseEntity<String> postApplications(
@@ -32,7 +32,7 @@ public class ApplicationsController {
 
         // TODO some request data validation
         // 1. Path var 'course' should match the course in the request body
-        // 2. Request body's 'places' and the total sum of all the beds among the houses should be equals
+        // 2. Request body's 'places' and the total sum of all the beds among the housesScoring should be equals
 
         // Mapping to domain
         final List<Application> applications = applicationAdmissionRequest.applicationRequests();
@@ -40,7 +40,7 @@ public class ApplicationsController {
               councilRuleSetRequestMapper.map(applicationAdmissionRequest.councilRuleSetRequest());
 
         // Processes the admission evaluation
-        admissionService.process(applications, councilPolicy);
+        enrollmentService.processEnrollment(applications, councilPolicy);
 
         // TODO return the corresponding response
         return ResponseEntity.unprocessableEntity().build();

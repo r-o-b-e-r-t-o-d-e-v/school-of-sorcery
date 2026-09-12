@@ -2,6 +2,7 @@ package com.liferay.infrastructure.config;
 
 import com.liferay.domain.services.AdmissionService;
 import com.liferay.domain.services.BanningService;
+import com.liferay.domain.services.EnrollmentService;
 import com.liferay.domain.services.HouseScoringService;
 import com.liferay.domain.services.HousingAssignationService;
 import com.liferay.domain.services.HousingService;
@@ -14,12 +15,19 @@ import org.springframework.context.annotation.Configuration;
 public class BeansConfig {
 
     @Bean
-    public AdmissionService admissionService(
-          final PreAdmissionFilterService preAdmissionFilterService,
-          final RankingService rankingService,
+    public EnrollmentService enrollmentService(
+          final AdmissionService admissionService,
           final HousingService housingService
     ) {
-        return new AdmissionService(preAdmissionFilterService, rankingService, housingService);
+        return new EnrollmentService(admissionService, housingService);
+    }
+
+    @Bean
+    public AdmissionService admissionService(
+          final PreAdmissionFilterService preAdmissionFilterService,
+          final RankingService rankingService
+    ) {
+        return new AdmissionService(preAdmissionFilterService, rankingService);
     }
 
     @Bean

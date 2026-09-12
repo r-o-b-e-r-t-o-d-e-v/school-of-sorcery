@@ -7,30 +7,25 @@ import com.liferay.domain.models.admissions.ApplicationResolution;
 import com.liferay.domain.models.admissions.ApplicationStatus;
 import com.liferay.domain.models.admissions.BannedApplication;
 import com.liferay.domain.models.admissions.PreAdmissionResolution;
-import com.liferay.domain.models.housing.HouseAssignation;
 
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
 
 public class AdmissionService {
     private final Logger log = Logger.getLogger(AdmissionService.class.getName());
 
     final PreAdmissionFilterService preAdmissionFilterService;
     final RankingService rankingService;
-    final HousingService housingService;
 
     public AdmissionService(
           final PreAdmissionFilterService preAdmissionFilterService,
-          final RankingService rankingService,
-          final HousingService housingService
+          final RankingService rankingService
     ) {
         this.preAdmissionFilterService = preAdmissionFilterService;
         this.rankingService = rankingService;
-        this.housingService = housingService;
     }
 
-    public void process(final List<Application> applications, final CouncilPolicy councilPolicy) {
+    public AdmissionResolution processAdmission(final List<Application> applications, final CouncilPolicy councilPolicy) {
         log.fine("Admission process starting");
 
         final PreAdmissionResolution preAdmissionResolution = preAdmissionFilterService.resolve(applications, councilPolicy);
@@ -46,12 +41,8 @@ public class AdmissionService {
               applicationsRanking
         );
 
-        log.fine("Processing admission resolution: " + admissionResolution);
-
-        final List<HouseAssignation> houseAssignation = housingService.processHousing(
-              mergeAcceptedApplications(admissionResolution), councilPolicy.housingScoreRules());
-
-        log.fine("House assignation process finished: " + houseAssignation);
+        log.fine("Admission resolution finished" + admissionResolution);
+        return admissionResolution;
     }
 
     private AdmissionResolution resolveAdmissions(
@@ -121,14 +112,5 @@ public class AdmissionService {
                     null)
               )
               .toList();
-    }
-
-    private List<Application> mergeAcceptedApplications(final AdmissionResolution admissionResolution) {
-        return Stream.concat(
-              admissionResolution.invitedApplications().stream()
-                    .map(ApplicationResolution::application),
-              admissionResolution.acceptedApplications().stream()
-                    .map(ApplicationResolution::application)
-        ).toList();
     }
 }
