@@ -1,9 +1,13 @@
 package com.liferay.infrastructure.dtos.requests;
 
+import org.springframework.boot.context.properties.bind.Name;
+
 import java.util.List;
 
 public record ApplicationAdmissionRequest(
-      List<ApplicationRequest> applicationRequests,
-      CouncilRuleSetRequest councilRuleSetRequest
+      @Name("council")
+      CouncilRuleSetRequest councilRuleSetRequest,
+      @Name("applications")
+      List<ApplicationRequest> applicationRequests
 ) {
 }

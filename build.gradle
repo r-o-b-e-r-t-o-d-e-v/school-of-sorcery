@@ -17,7 +17,9 @@ repositories {
 }
 
 dependencies {
-    implementation("org.projectlombok:lombok:$LOMBOK")
+    compileOnly("org.projectlombok:lombok:$LOMBOK")
+    annotationProcessor("org.projectlombok:lombok:$LOMBOK")
+
     implementation("org.springframework.boot:spring-boot-starter-web:$SPRING_BOOT")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$OPEN_API")
 
