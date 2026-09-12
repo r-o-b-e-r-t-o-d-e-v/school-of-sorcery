@@ -2,8 +2,8 @@ package com.liferay.domain.services;
 
 import com.liferay.domain.models.Application;
 import com.liferay.domain.models.CouncilPolicy;
-import com.liferay.domain.models.PreAdmissionResolution;
-import com.liferay.domain.models.PreFilteredApplications;
+import com.liferay.domain.models.admissions.PreAdmissionResolution;
+import com.liferay.domain.models.admissions.PreFilteredApplications;
 
 import java.util.List;
 import java.util.logging.Logger;

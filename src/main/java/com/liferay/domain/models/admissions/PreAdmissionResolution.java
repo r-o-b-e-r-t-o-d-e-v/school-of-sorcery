@@ -1,4 +1,6 @@
-package com.liferay.domain.models;
+package com.liferay.domain.models.admissions;
+
+import com.liferay.domain.models.Application;
 
 import java.util.List;
 

@@ -3,10 +3,10 @@ package com.liferay.domain.services;
 
 import com.liferay.domain.models.AdmissionRules;
 import com.liferay.domain.models.Application;
-import com.liferay.domain.models.BannedApplication;
+import com.liferay.domain.models.admissions.BannedApplication;
 import com.liferay.domain.models.DateRange;
 import com.liferay.domain.models.IntRange;
-import com.liferay.domain.models.PreFilteredApplications;
+import com.liferay.domain.models.admissions.PreFilteredApplications;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
