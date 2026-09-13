@@ -519,3 +519,5 @@ dist
 
 /.idea/
 _notes
+
+/infra-data/

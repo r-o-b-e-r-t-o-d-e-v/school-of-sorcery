@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16.4-alpine3.20
+    container_name: school-of-sorcery
+
+    environment:
+      POSTGRES_DB: school-of-sorcery
+      POSTGRES_USER: userdb
+      POSTGRES_PASSWORD: passdb
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - ./infra-data/postgres-data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U userdb -d school-of-sorcery" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  db-postgres-data:
