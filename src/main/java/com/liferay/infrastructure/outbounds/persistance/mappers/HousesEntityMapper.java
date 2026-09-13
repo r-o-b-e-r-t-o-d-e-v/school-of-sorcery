@@ -17,6 +17,10 @@ public class HousesEntityMapper {
 
     private final StudentEntityMapper studentEntityMapper;
 
+    public List<HouseEntity> mapHouses(final List<House> houses) {
+        return houses.stream().map(this::mapHouse).toList();
+    }
+
     public HouseEntity mapHouse(final House house) {
         return HouseEntity.builder()
               .name(house.name())
@@ -41,6 +45,12 @@ public class HousesEntityMapper {
                           .student(studentEntityMapper.map(student))
                           .build()
               )
+              .toList();
+    }
+
+    public List<HouseBeddingEntity> mapHouseBedding(final String academicYear, final List<House> house) {
+        return house.stream()
+              .map(houseEntity -> mapHouseBedding(academicYear, houseEntity))
               .toList();
     }
 

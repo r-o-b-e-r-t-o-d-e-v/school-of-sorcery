@@ -1,5 +1,7 @@
 package com.liferay.infrastructure.config;
 
+import com.liferay.domain.interfaces.ApplicationRepository;
+import com.liferay.domain.interfaces.HouseRepository;
 import com.liferay.domain.services.AdmissionService;
 import com.liferay.domain.services.BanningService;
 import com.liferay.domain.services.EnrollmentService;
@@ -17,9 +19,11 @@ public class BeansConfig {
     @Bean
     public EnrollmentService enrollmentService(
           final AdmissionService admissionService,
-          final HousingService housingService
+          final HousingService housingService,
+          final ApplicationRepository applicationRepository,
+          final HouseRepository houseRepository
     ) {
-        return new EnrollmentService(admissionService, housingService);
+        return new EnrollmentService(admissionService, housingService, applicationRepository, houseRepository);
     }
 
     @Bean

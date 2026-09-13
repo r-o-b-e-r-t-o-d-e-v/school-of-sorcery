@@ -1,6 +1,7 @@
 package com.liferay.infrastructure.outbounds.persistance.entities;
 
 import com.liferay.domain.models.admissions.ApplicationStatus;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,6 +16,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
@@ -30,6 +32,7 @@ import java.time.LocalDate;
 )
 @Builder
 @Getter
+@Setter
 public class ApplicationEntity {
 
     @Id
@@ -42,7 +45,7 @@ public class ApplicationEntity {
     @Column(name = "application_date", nullable = false)
     private LocalDate applicationDate;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "student_id", nullable = false)
     private StudentEntity student;
 

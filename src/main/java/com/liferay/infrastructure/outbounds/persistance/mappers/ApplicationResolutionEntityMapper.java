@@ -5,11 +5,19 @@ import com.liferay.infrastructure.outbounds.persistance.entities.ApplicationEnti
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class ApplicationResolutionEntityMapper {
 
     private final StudentEntityMapper studentEntityMapper;
+
+    public List<ApplicationEntity> map(final String academicYear, final List<ApplicationResolution> applicationResolutions) {
+        return applicationResolutions.stream()
+              .map(applicationResolution -> map(academicYear, applicationResolution))
+              .toList();
+    }
 
     public ApplicationEntity map(final String academicYear, final ApplicationResolution applicationResolution) {
         return ApplicationEntity.builder()

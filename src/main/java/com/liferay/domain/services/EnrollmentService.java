@@ -1,5 +1,7 @@
 package com.liferay.domain.services;
 
+import com.liferay.domain.interfaces.ApplicationRepository;
+import com.liferay.domain.interfaces.HouseRepository;
 import com.liferay.domain.models.Application;
 import com.liferay.domain.models.CouncilPolicy;
 import com.liferay.domain.models.admissions.AdmissionResolution;
@@ -15,13 +17,19 @@ public class EnrollmentService {
 
     final AdmissionService admissionService;
     final HousingService housingService;
+    final ApplicationRepository applicationRepository;
+    final HouseRepository houseRepository;
 
     public EnrollmentService(
           final AdmissionService admissionService,
-          final HousingService housingService
+          final HousingService housingService,
+          final ApplicationRepository applicationRepository,
+          final HouseRepository houseRepository
     ) {
         this.admissionService = admissionService;
         this.housingService = housingService;
+        this.applicationRepository = applicationRepository;
+        this.houseRepository = houseRepository;
     }
 
     public void processEnrollment(final List<Application> applications, final CouncilPolicy councilPolicy) {
@@ -30,6 +38,10 @@ public class EnrollmentService {
 
         final HouseAssignationBook houseAssignationBook = housingService.assignHouses(
               mergeAcceptedApplications(admissionResolution), councilPolicy.housingScoreRules());
+
+        // TODO transactional
+        applicationRepository.save(admissionResolution);
+        houseRepository.save(councilPolicy.year(), houseAssignationBook);
 
         log.fine("House assignation process finished: " + houseAssignationBook);
     }
