@@ -10,6 +10,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import lombok.Builder;
+import lombok.Getter;
 
 @Entity
 @Table(
@@ -21,6 +23,8 @@ import jakarta.persistence.UniqueConstraint;
             )
       }
 )
+@Builder
+@Getter
 public class HouseAssignmentEntity {
 
     @Id
