@@ -39,7 +39,6 @@ public class EnrollmentService {
         final HouseAssignationBook houseAssignationBook = housingService.assignHouses(
               mergeAcceptedApplications(admissionResolution), councilPolicy.housingScoreRules());
 
-        // TODO transactional
         applicationRepository.save(admissionResolution);
         houseRepository.save(councilPolicy.year(), houseAssignationBook);
 

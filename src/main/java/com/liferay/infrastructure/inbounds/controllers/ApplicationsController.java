@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ApplicationsController {
     private final CouncilRuleSetRequestMapper councilRuleSetRequestMapper;
-    private final EnrollmentService enrollmentService;
+    private final ProcessEnrollmentUseCase processEnrollmentUseCase;
 
     @PostMapping("/{course}/admission")
     public ResponseEntity<String> postApplications(
@@ -40,7 +40,7 @@ public class ApplicationsController {
               councilRuleSetRequestMapper.map(applicationAdmissionRequest.councilRuleSetRequest());
 
         // Processes the admission evaluation
-        enrollmentService.processEnrollment(applications, councilPolicy);
+        processEnrollmentUseCase.execute(applications, councilPolicy);
 
         // TODO return the corresponding response
         return ResponseEntity.unprocessableEntity().build();
