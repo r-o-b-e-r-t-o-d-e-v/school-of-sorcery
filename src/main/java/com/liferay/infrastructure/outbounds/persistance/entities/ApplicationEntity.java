@@ -14,8 +14,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -33,6 +35,8 @@ import java.time.LocalDate;
 @Builder
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ApplicationEntity {
 
     @Id
@@ -44,6 +48,9 @@ public class ApplicationEntity {
 
     @Column(name = "application_date", nullable = false)
     private LocalDate applicationDate;
+
+    @Column(name = "age_at_application", nullable = false)
+    private Integer ageAtApplication;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "student_id", nullable = false)

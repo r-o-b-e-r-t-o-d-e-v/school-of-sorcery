@@ -23,6 +23,7 @@ public class ApplicationResolutionEntityMapper {
         return ApplicationEntity.builder()
               .academicYear(academicYear)
               .applicationDate(applicationResolution.application().applicationDate())
+              .ageAtApplication(applicationResolution.application().age())
               .student(studentEntityMapper.map(applicationResolution.application()))
               .status(applicationResolution.applicationStatus())
               .rejectionFeedback(applicationResolution.rejectionFeedback())

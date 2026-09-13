@@ -3,6 +3,9 @@ package com.liferay.infrastructure.outbounds.persistance.repositories;
 import com.liferay.domain.interfaces.ApplicationRepository;
 import com.liferay.domain.models.admissions.AdmissionResolution;
 import com.liferay.domain.models.admissions.ApplicationResolution;
+import com.liferay.domain.models.admissions.ApplicationStatus;
+import com.liferay.infrastructure.dtos.responses.AcceptedApplicationRankResponse;
+import com.liferay.infrastructure.dtos.responses.RejectedApplicationRankResponse;
 import com.liferay.infrastructure.outbounds.persistance.entities.ApplicationEntity;
 import com.liferay.infrastructure.outbounds.persistance.entities.StudentEntity;
 import com.liferay.infrastructure.outbounds.persistance.mappers.ApplicationResolutionEntityMapper;
@@ -49,6 +52,19 @@ public class ApplicationRepositoryImpl implements ApplicationRepository {
         return applicationRepositoryJpa.existsByAcademicYear(academicYear);
     }
 
+    @Override
+    public List<AcceptedApplicationRankResponse> getAcceptedApplicationsRanking(final String academicYear) {
+        return applicationRepositoryJpa.findAllAcceptedRankingsWithHouses(academicYear);
+    }
+
+    @Override
+    public List<RejectedApplicationRankResponse> getRejectedApplicationsRanking(final String academicYear) {
+        final List<ApplicationEntity> applicationEntities = applicationRepositoryJpa.findAllByAcademicYearAndStatusInOrderByScoreDescAgeAtApplicationAscStudentFamilyNameAscStudentNameAsc(
+              academicYear, List.of(ApplicationStatus.REJECTED, ApplicationStatus.BANNED));
+
+        return mapApplicationEntityToRejectedApplicationRankResponse(applicationEntities);
+    }
+
     private List<ApplicationResolution> extractAllApplicationResolutions(final AdmissionResolution admissionResolution) {
         return Stream.of(
                     admissionResolution.invitedApplications(),
@@ -85,5 +101,17 @@ public class ApplicationRepositoryImpl implements ApplicationRepository {
         for (final StudentEntity student : existingStudentEntities) {
             studentsByExternalId.get(student.getExternalId()).setId(student.getId());
         }
+    }
+
+    private List<RejectedApplicationRankResponse> mapApplicationEntityToRejectedApplicationRankResponse(
+          final List<ApplicationEntity> applicationEntities) {
+        return applicationEntities.stream()
+              .map(applicationEntity -> new RejectedApplicationRankResponse(
+                    applicationEntity.getStudent().getName(),
+                    applicationEntity.getStudent().getFamilyName(),
+                    applicationEntity.getScore(),
+                    applicationEntity.getStatus().toString(),
+                    applicationEntity.getRejectionFeedback()
+              )).toList();
     }
 }

@@ -1,10 +1,13 @@
 package com.liferay.infrastructure.inbounds.controllers;
 
+import com.liferay.application.usecases.GetApplicationsRankingUseCase;
 import com.liferay.application.usecases.ProcessEnrollmentUseCase;
 import com.liferay.domain.models.Application;
 import com.liferay.domain.models.CouncilPolicy;
 import com.liferay.infrastructure.dtos.requests.ApplicationAdmissionRequest;
 import com.liferay.infrastructure.dtos.requests.HouseRequest;
+import com.liferay.infrastructure.dtos.responses.AcceptedApplicationRankResponse;
+import com.liferay.infrastructure.dtos.responses.RejectedApplicationRankResponse;
 import com.liferay.infrastructure.mappers.CouncilRuleSetRequestMapper;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -27,10 +30,11 @@ import java.util.Objects;
 public class ApplicationsController {
     private final CouncilRuleSetRequestMapper councilRuleSetRequestMapper;
     private final ProcessEnrollmentUseCase processEnrollmentUseCase;
+    private final GetApplicationsRankingUseCase getApplicationsRankingUseCase;
 
     @PostMapping("/{academicYear}/admission")
     public ResponseEntity<String> postApplications(
-          @PathVariable @Pattern(regexp = "\\d{4}-\\d{4}") String academicYear,
+          @PathVariable @Pattern(regexp = "\\d{4}-\\d{4}") final String academicYear,
           @RequestBody final ApplicationAdmissionRequest applicationAdmissionRequest) {
 
         log.debug("Received POST request for application admissions");
@@ -67,21 +71,37 @@ public class ApplicationsController {
         return ResponseEntity.ok().body("Applications successfully processed");
     }
 
-    @GetMapping("/{course}/ranking")
-    public ResponseEntity<String> getRankings(@PathVariable String course) {
+    @GetMapping("/{academicYear}/ranking")
+    public ResponseEntity<List<AcceptedApplicationRankResponse>> getRankings(
+          @PathVariable @Pattern(regexp = "\\d{4}-\\d{4}") final String academicYear
+    ) {
         log.debug("Received GET request for application ranking");
 
-        // TODO
+        if (!processEnrollmentUseCase.isAcademicYearProcessed(academicYear)) {
+            // TODO take care on this when handle validations
+            throw new RuntimeException("Academic year " + academicYear + " hasn't yet been processed");
+        }
 
-        return ResponseEntity.unprocessableEntity().build();
+        final List<AcceptedApplicationRankResponse> response =
+              getApplicationsRankingUseCase.getAcceptedApplicationsRanking(academicYear);
+
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{course}/rejections")
-    public ResponseEntity<String> getRejections(@PathVariable String course) {
+    @GetMapping("/{academicYear}/rejections")
+    public ResponseEntity<List<RejectedApplicationRankResponse>> getRejections(
+          @PathVariable @Pattern(regexp = "\\d{4}-\\d{4}") final String academicYear
+    ) {
         log.debug("Received GET request for application rejections");
 
-        // TODO
+        if (!processEnrollmentUseCase.isAcademicYearProcessed(academicYear)) {
+            // TODO take care on this when handle validations
+            throw new RuntimeException("Academic year " + academicYear + " hasn't yet been processed");
+        }
 
-        return ResponseEntity.unprocessableEntity().build();
+        final List<RejectedApplicationRankResponse> response =
+              getApplicationsRankingUseCase.getRejectedApplicationsRanking(academicYear);
+
+        return ResponseEntity.ok(response);
     }
 }
