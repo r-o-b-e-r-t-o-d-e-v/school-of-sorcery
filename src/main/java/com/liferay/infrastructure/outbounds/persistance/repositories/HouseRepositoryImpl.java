@@ -4,6 +4,7 @@ import com.liferay.domain.interfaces.HouseRepository;
 import com.liferay.domain.models.House;
 import com.liferay.domain.models.housing.HouseAssignationBook;
 import com.liferay.domain.models.housing.HouseResidents;
+import com.liferay.infrastructure.dtos.responses.HouseDetailResponse;
 import com.liferay.infrastructure.outbounds.persistance.entities.HouseAssignmentEntity;
 import com.liferay.infrastructure.outbounds.persistance.entities.HouseBeddingEntity;
 import com.liferay.infrastructure.outbounds.persistance.entities.HouseEntity;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -47,6 +49,33 @@ public class HouseRepositoryImpl implements HouseRepository {
         saveHouseAssignments(academicYear, houseAssignationBook, houseIdsByName);
 
         log.fine("House assignments saved");
+    }
+
+    @Override
+    public List<String> getAvailableHouses(final String academicYear) {
+        return housesBeddingRepositoryJpa.findAllByAcademicYear(academicYear).stream()
+              .map(HouseBeddingEntity::getHouse)
+              .map(HouseEntity::getName)
+              .toList();
+    }
+
+    @Override
+    public Optional<HouseDetailResponse> getHouseDetail(final String academicYear, final String houseName) {
+        return housesBeddingRepositoryJpa
+              .findByAcademicYearAndHouseName(academicYear, houseName)
+              .map(bedding -> {
+                  final List<String> assignedStudents = housesAssignmentRepositoryJpa
+                        .findByAcademicYearAndHouseName(academicYear, houseName)
+                        .stream()
+                        .map(this::formatFullName)
+                        .toList();
+
+                  return new HouseDetailResponse(
+                        bedding.getHouse().getName(),
+                        bedding.getTotalBeds(),
+                        assignedStudents
+                  );
+              });
     }
 
     // Save the houses that don't exist in DB.
@@ -123,5 +152,10 @@ public class HouseRepositoryImpl implements HouseRepository {
         for (final StudentEntity student : existingStudentEntities) {
             studentsByExternalId.get(student.getExternalId()).setId(student.getId());
         }
+    }
+
+    // TODO improve this
+    private String formatFullName(final HouseAssignmentEntity houseAssignmentEntity) {
+        return String.format("%s %s", houseAssignmentEntity.getStudent().getName(), houseAssignmentEntity.getStudent().getFamilyName());
     }
 }

@@ -18,7 +18,7 @@ public interface ApplicationRepositoryJpa extends JpaRepository<ApplicationEntit
               students.family_name AS familyName,
               applications.score AS score,
               applications.status AS status,
-              houses.name AS houseName
+              houses.name AS house
           FROM applications
           JOIN students
               ON students.id = applications.student_id

@@ -5,6 +5,6 @@ public record AcceptedApplicationRankResponse(
       String familyName,
       Integer score,
       String status,
-      String houseName
+      String house
 ) {
 }

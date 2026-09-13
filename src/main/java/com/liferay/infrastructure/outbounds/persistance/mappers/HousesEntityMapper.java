@@ -23,7 +23,7 @@ public class HousesEntityMapper {
 
     public HouseEntity mapHouse(final House house) {
         return HouseEntity.builder()
-              .name(house.name())
+              .name(house.name().toLowerCase())
               .build();
     }
 
