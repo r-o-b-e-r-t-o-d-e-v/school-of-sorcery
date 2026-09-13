@@ -44,6 +44,11 @@ public class ApplicationRepositoryImpl implements ApplicationRepository {
         log.fine("Admission resolution saved");
     }
 
+    @Override
+    public boolean isAcademicYearProcessed(final String academicYear) {
+        return applicationRepositoryJpa.existsByAcademicYear(academicYear);
+    }
+
     private List<ApplicationResolution> extractAllApplicationResolutions(final AdmissionResolution admissionResolution) {
         return Stream.of(
                     admissionResolution.invitedApplications(),
