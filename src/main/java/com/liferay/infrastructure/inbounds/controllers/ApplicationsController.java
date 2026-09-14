@@ -2,12 +2,15 @@ package com.liferay.infrastructure.inbounds.controllers;
 
 import com.liferay.application.usecases.GetApplicationsRankingUseCase;
 import com.liferay.application.usecases.ProcessEnrollmentUseCase;
+import com.liferay.domain.exceptions.AdmissionsAlreadyProcessedException;
+import com.liferay.domain.exceptions.AdmissionsNotYetProcessedException;
 import com.liferay.domain.models.Application;
 import com.liferay.domain.models.CouncilPolicy;
 import com.liferay.infrastructure.dtos.requests.ApplicationAdmissionRequest;
 import com.liferay.infrastructure.dtos.requests.HouseRequest;
 import com.liferay.infrastructure.dtos.responses.AcceptedApplicationRankResponse;
 import com.liferay.infrastructure.dtos.responses.RejectedApplicationRankResponse;
+import com.liferay.infrastructure.exceptions.InvalidAdmissionRequestException;
 import com.liferay.infrastructure.mappers.CouncilRuleSetRequestMapper;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -41,23 +44,20 @@ public class ApplicationsController {
 
         // Validations
         if (!Objects.equals(applicationAdmissionRequest.councilRuleSetRequest().year(), academicYear)) {
-            return ResponseEntity.badRequest()
-                  .body("Academic year mismatch");
+            throw new InvalidAdmissionRequestException("Academic year mismatch");
         }
 
         if (Objects.equals(academicYear.split("-")[0], academicYear.split("-")[1])) {
-            return ResponseEntity.badRequest()
-                  .body("Academic year malformed");
+            throw new InvalidAdmissionRequestException("Academic year malformed");
         }
 
         if (applicationAdmissionRequest.councilRuleSetRequest().places() != applicationAdmissionRequest.councilRuleSetRequest().houses().stream().mapToInt(HouseRequest::beds).sum()) {
-            return ResponseEntity.badRequest()
-                  .body("Places and available house beds mismatch");
+            throw new InvalidAdmissionRequestException("Places and available house beds mismatch");
         }
 
         if (processEnrollmentUseCase.isAcademicYearProcessed(academicYear)) {
-            return ResponseEntity.unprocessableEntity()
-                  .body("Academic year " + academicYear + " has already been processed");
+            throw new AdmissionsAlreadyProcessedException(
+                  "Academic year " + academicYear + " has already been processed");
         }
 
         // Mapping to domain
@@ -78,8 +78,7 @@ public class ApplicationsController {
         log.debug("Received GET request for application ranking");
 
         if (!processEnrollmentUseCase.isAcademicYearProcessed(academicYear)) {
-            // TODO take care on this when handle validations
-            throw new RuntimeException("Academic year " + academicYear + " hasn't yet been processed");
+            throw new AdmissionsNotYetProcessedException("Academic year " + academicYear + " hasn't yet been processed");
         }
 
         final List<AcceptedApplicationRankResponse> response =
@@ -95,8 +94,7 @@ public class ApplicationsController {
         log.debug("Received GET request for application rejections");
 
         if (!processEnrollmentUseCase.isAcademicYearProcessed(academicYear)) {
-            // TODO take care on this when handle validations
-            throw new RuntimeException("Academic year " + academicYear + " hasn't yet been processed");
+            throw new AdmissionsNotYetProcessedException("Academic year " + academicYear + " hasn't yet been processed");
         }
 
         final List<RejectedApplicationRankResponse> response =

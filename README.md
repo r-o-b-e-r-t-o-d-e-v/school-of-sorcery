@@ -1,4 +1,6 @@
 
+## School of Sorcery
+
 ### Overview
 
 The application is build as a Java(Gradle) + Spring Boot microservice that exposes a few endpoints.
