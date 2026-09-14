@@ -10,26 +10,23 @@ import com.liferay.infrastructure.outbounds.persistance.entities.ApplicationEnti
 import com.liferay.infrastructure.outbounds.persistance.entities.StudentEntity;
 import com.liferay.infrastructure.outbounds.persistance.mappers.ApplicationResolutionEntityMapper;
 import com.liferay.infrastructure.outbounds.persistance.repositories.jpa.ApplicationRepositoryJpa;
-import com.liferay.infrastructure.outbounds.persistance.repositories.jpa.StudentRepositoryJpa;
+import com.liferay.infrastructure.outbounds.persistance.repositories.utils.RepositoryHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Repository
 @RequiredArgsConstructor
 public class ApplicationRepositoryImpl implements ApplicationRepository {
-
     private final Logger log = Logger.getLogger(ApplicationRepositoryImpl.class.getName());
+
+    private final RepositoryHelper repositoryHelper;
     private final ApplicationResolutionEntityMapper applicationResolutionEntityMapper;
     private final ApplicationRepositoryJpa applicationRepositoryJpa;
-    private final StudentRepositoryJpa studentRepositoryJpa;
 
     @Override
     public void save(final AdmissionResolution admissionResolution) {
@@ -41,7 +38,10 @@ public class ApplicationRepositoryImpl implements ApplicationRepository {
         final List<ApplicationEntity> applicationEntities =
               applicationResolutionEntityMapper.map(academicYear, applicationResolutions);
 
-        setExistingStudentsIds(applicationEntities);
+        final List<StudentEntity> studentEntities =
+              applicationEntities.stream().map(ApplicationEntity::getStudent).toList();
+
+        repositoryHelper.setExistingStudentsIds(studentEntities);
 
         applicationRepositoryJpa.saveAll(applicationEntities);
         log.fine("Admission resolution saved");
@@ -76,33 +76,6 @@ public class ApplicationRepositoryImpl implements ApplicationRepository {
               .toList();
     }
 
-    // Updates the student entity ids. This is because when saving the application resolutions,
-    // the entities will always have their id as null (the sequential id, not the external id).
-    // So the students will always be created even if they already exist.
-    // To fix that, we recover the existing ones and set their ids in the entities.
-    // JPA will later insert the non-existing entities and respect the ones with id.
-    private void setExistingStudentsIds(final List<ApplicationEntity> applicationEntities) {
-        final List<StudentEntity> studentEntities =
-              applicationEntities.stream().map(ApplicationEntity::getStudent).toList();
-
-        final Map<String, StudentEntity> studentsByExternalId =
-              studentEntities.stream()
-                    .collect(Collectors.toMap(
-                          StudentEntity::getExternalId,
-                          Function.identity()
-                    ));
-
-        final List<String> studentEntitiesExternalIds =
-              studentEntities.stream().map(StudentEntity::getExternalId).toList();
-
-        final List<StudentEntity> existingStudentEntities =
-              studentRepositoryJpa.findAllByExternalIdIn(studentEntitiesExternalIds);
-
-        for (final StudentEntity student : existingStudentEntities) {
-            studentsByExternalId.get(student.getExternalId()).setId(student.getId());
-        }
-    }
-
     private List<RejectedApplicationRankResponse> mapApplicationEntityToRejectedApplicationRankResponse(
           final List<ApplicationEntity> applicationEntities) {
         return applicationEntities.stream()
@@ -111,7 +84,7 @@ public class ApplicationRepositoryImpl implements ApplicationRepository {
                     applicationEntity.getStudent().getFamilyName(),
                     applicationEntity.getScore(),
                     applicationEntity.getStatus().toString(),
-                    applicationEntity.getRejectionFeedback()
+                    applicationEntity.getRejectionReason()
               )).toList();
     }
 }

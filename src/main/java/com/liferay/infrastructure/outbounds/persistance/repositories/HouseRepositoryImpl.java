@@ -13,7 +13,8 @@ import com.liferay.infrastructure.outbounds.persistance.mappers.HousesEntityMapp
 import com.liferay.infrastructure.outbounds.persistance.repositories.jpa.HousesAssignmentRepositoryJpa;
 import com.liferay.infrastructure.outbounds.persistance.repositories.jpa.HousesBeddingRepositoryJpa;
 import com.liferay.infrastructure.outbounds.persistance.repositories.jpa.HousesRepositoryJpa;
-import com.liferay.infrastructure.outbounds.persistance.repositories.jpa.StudentRepositoryJpa;
+import com.liferay.infrastructure.outbounds.persistance.repositories.utils.RepositoryHelper;
+import com.liferay.infrastructure.outbounds.persistance.repositories.utils.RepositoryUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -28,12 +29,12 @@ import java.util.stream.Collectors;
 @Repository
 @RequiredArgsConstructor
 public class HouseRepositoryImpl implements HouseRepository {
-
     private final Logger log = Logger.getLogger(HouseRepositoryImpl.class.getName());
+
+    private final RepositoryHelper repositoryHelper;
     private final HousesRepositoryJpa housesRepositoryJpa;
     private final HousesAssignmentRepositoryJpa housesAssignmentRepositoryJpa;
     private final HousesBeddingRepositoryJpa housesBeddingRepositoryJpa;
-    private final StudentRepositoryJpa studentRepositoryJpa;
     private final HousesEntityMapper housesEntityMapper;
 
     @Override
@@ -67,7 +68,8 @@ public class HouseRepositoryImpl implements HouseRepository {
                   final List<String> assignedStudents = housesAssignmentRepositoryJpa
                         .findByAcademicYearAndHouseName(academicYear, houseName)
                         .stream()
-                        .map(this::formatFullName)
+                        .map(houseAssignmentEntity ->
+                              RepositoryUtils.formatStudentFullName(houseAssignmentEntity.getStudent()))
                         .toList();
 
                   return new HouseDetailResponse(
@@ -124,38 +126,8 @@ public class HouseRepositoryImpl implements HouseRepository {
               .map(HouseAssignmentEntity::getStudent)
               .toList();
 
-        setExistingStudentsIds(studentEntities);
+        repositoryHelper.setExistingStudentsIds(studentEntities);
 
         housesAssignmentRepositoryJpa.saveAll(houseAssignmentEntities);
-    }
-
-    // TODO this can be extracted since ApplicationRepositoryImpl is also using it
-    // Updates the student entity ids. This is because when saving the application resolutions,
-    // the entities will always have their id as null (the sequential id, not the external id).
-    // So the students will always be created even if they already exist.
-    // To fix that, we recover the existing ones and set their ids in the entities.
-    // JPA will later insert the non-existing entities and respect the ones with id.
-    private void setExistingStudentsIds(final List<StudentEntity> studentEntities) {
-        final Map<String, StudentEntity> studentsByExternalId =
-              studentEntities.stream()
-                    .collect(Collectors.toMap(
-                          StudentEntity::getExternalId,
-                          Function.identity()
-                    ));
-
-        final List<String> studentEntitiesExternalIds =
-              studentEntities.stream().map(StudentEntity::getExternalId).toList();
-
-        final List<StudentEntity> existingStudentEntities =
-              studentRepositoryJpa.findAllByExternalIdIn(studentEntitiesExternalIds);
-
-        for (final StudentEntity student : existingStudentEntities) {
-            studentsByExternalId.get(student.getExternalId()).setId(student.getId());
-        }
-    }
-
-    // TODO improve this
-    private String formatFullName(final HouseAssignmentEntity houseAssignmentEntity) {
-        return String.format("%s %s", houseAssignmentEntity.getStudent().getName(), houseAssignmentEntity.getStudent().getFamilyName());
     }
 }
