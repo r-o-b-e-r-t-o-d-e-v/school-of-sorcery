@@ -60,8 +60,8 @@ public class ApplicationEntity {
     @Column(nullable = false)
     private ApplicationStatus status;
 
-    @Column(name = "rejection_feedback")
-    private String rejectionFeedback;
+    @Column(name = "rejection_reason")
+    private String rejectionReason;
 
     @Column(name = "score")
     private Integer score;

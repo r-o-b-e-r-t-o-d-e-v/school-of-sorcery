@@ -9,6 +9,6 @@ public record RejectedApplicationRankResponse(
       String familyName,
       Integer score,
       String status,
-      String rejectionFeedback
+      String rejectionReason
 ) {
 }

@@ -26,7 +26,7 @@ public class ApplicationResolutionEntityMapper {
               .ageAtApplication(applicationResolution.application().age())
               .student(studentEntityMapper.map(applicationResolution.application()))
               .status(applicationResolution.applicationStatus())
-              .rejectionFeedback(applicationResolution.rejectionFeedback())
+              .rejectionReason(applicationResolution.rejectionReason())
               .score(applicationResolution.score())
               .build();
     }

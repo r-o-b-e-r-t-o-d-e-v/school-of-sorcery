@@ -5,7 +5,7 @@ import com.liferay.domain.models.Application;
 public record ApplicationResolution(
       Application application,
       ApplicationStatus applicationStatus,
-      String rejectionFeedback,
+      String rejectionReason,
       Integer score
 ) {
 }

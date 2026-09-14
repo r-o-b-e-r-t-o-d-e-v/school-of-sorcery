@@ -3,10 +3,11 @@ package com.liferay.domain.services;
 
 import com.liferay.domain.models.AdmissionRules;
 import com.liferay.domain.models.Application;
-import com.liferay.domain.models.admissions.BannedApplication;
 import com.liferay.domain.models.DateRange;
 import com.liferay.domain.models.IntRange;
+import com.liferay.domain.models.admissions.BannedApplication;
 import com.liferay.domain.models.admissions.PreFilteredApplications;
+import com.liferay.domain.utils.Constants;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -20,16 +21,15 @@ public class BanningService {
         final List<Application> candidates = new ArrayList<>();
         final List<BannedApplication> bannedApplications = new ArrayList<>();
 
-        // TODO Ban reason can be improved
         applications.forEach(application -> {
             if (isBannedByFamily(admissionRules, application)) {
-                bannedApplications.add(new BannedApplication(application, "Banned family"));
+                bannedApplications.add(new BannedApplication(application, Constants.BAN_REASON_BANNED_FAMILY));
             } else if (isBannedByAgeRange(admissionRules, application)) {
-                bannedApplications.add(new BannedApplication(application, "Out of age range"));
+                bannedApplications.add(new BannedApplication(application, Constants.BAN_REASON_OUT_OF_AGE_RANGE));
             } else if (isBannedByWeakness(admissionRules, application)) {
-                bannedApplications.add(new BannedApplication(application, "Unacceptable weakness"));
+                bannedApplications.add(new BannedApplication(application, Constants.BAN_REASON_UNACCEPTABLE_WEAKNESS));
             } else if (isBannedByDateRange(admissionRules, application)) {
-                bannedApplications.add(new BannedApplication(application, "Out of date range"));
+                bannedApplications.add(new BannedApplication(application, Constants.BAN_REASON_OUT_OF_DATE_RANGE));
             } else {
                 candidates.add(application);
             }

@@ -7,6 +7,7 @@ import com.liferay.domain.models.admissions.ApplicationResolution;
 import com.liferay.domain.models.admissions.ApplicationStatus;
 import com.liferay.domain.models.admissions.BannedApplication;
 import com.liferay.domain.models.admissions.PreAdmissionResolution;
+import com.liferay.domain.utils.Constants;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -95,7 +96,7 @@ public class AdmissionService {
               .map(rejected -> new ApplicationResolution(
                     rejected.application(),
                     ApplicationStatus.REJECTED,
-                    "Low scores",     // TODO handle this
+                    Constants.REJECTION_REASON_LOW_SCORES,
                     rejected.score())
               )
               .toList();

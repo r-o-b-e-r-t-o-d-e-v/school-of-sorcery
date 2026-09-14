@@ -9,7 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
 
-// TODO For the moment, I won't include invited students along with the rest of candidates
+// For the moment, I won't include invited students along with the rest of candidates
 public class RankingService {
     private final Logger log = Logger.getLogger(RankingService.class.getName());
 
