@@ -42,7 +42,7 @@ public class EnrollmentService {
         applicationRepository.save(admissionResolution);
         houseRepository.save(councilPolicy.year(), houseAssignationBook);
 
-        log.fine("House assignation process finished: " + houseAssignationBook);
+        log.fine("House assignation process finished");
     }
 
     private List<Application> mergeAcceptedApplications(final AdmissionResolution admissionResolution) {

@@ -96,7 +96,7 @@ public class AdmissionService {
               .map(rejected -> new ApplicationResolution(
                     rejected.application(),
                     ApplicationStatus.REJECTED,
-                    Constants.REJECTION_REASON_LOW_SCORES,
+                    Constants.REJECTION_REASON_LOW_SCORE,
                     rejected.score())
               )
               .toList();
