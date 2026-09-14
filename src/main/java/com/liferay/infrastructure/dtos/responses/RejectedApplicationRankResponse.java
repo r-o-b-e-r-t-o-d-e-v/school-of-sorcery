@@ -1,5 +1,9 @@
 package com.liferay.infrastructure.dtos.responses;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record RejectedApplicationRankResponse(
       String name,
       String familyName,

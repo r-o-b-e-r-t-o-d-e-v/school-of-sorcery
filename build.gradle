@@ -33,3 +33,7 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+tasks.register('cleanDatabase', Delete) {
+    delete 'infra-data/postgres-data'
+}
